@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Attention Is Finite</title>
+<style>
+@font-face{font-family:Inter;font-style:normal;font-weight:400;src:url(fonts/inter-400.woff2) format('woff2')}
+@font-face{font-family:Inter;font-style:normal;font-weight:500;src:url(fonts/inter-500.woff2) format('woff2')}
+@font-face{font-family:Inter;font-style:normal;font-weight:600;src:url(fonts/inter-600.woff2) format('woff2')}
+@font-face{font-family:Inter;font-style:normal;font-weight:700;src:url(fonts/inter-700.woff2) format('woff2')}
+@font-face{font-family:Inter;font-style:normal;font-weight:800;src:url(fonts/inter-800.woff2) format('woff2')}
+@font-face{font-family:Inter;font-style:normal;font-weight:900;src:url(fonts/inter-900.woff2) format('woff2')}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1350px;overflow:hidden;background:#06080B}
+body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+
+#stage{position:relative;width:1080px;height:1350px;overflow:hidden;
+  background:radial-gradient(125% 85% at 50% -5%,#151C2B 0%,#0B0F17 52%,#06080B 100%)}
+
+/* noise of many competing hues, which collapses to one when the screen calms */
+#hues{position:absolute;inset:0;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(24% 15% at 24% 40%,rgba(236,72,153,.30),transparent 70%),
+    radial-gradient(24% 15% at 78% 38%,rgba(16,185,129,.26),transparent 70%),
+    radial-gradient(24% 15% at 18% 70%,rgba(6,182,212,.26),transparent 70%),
+    radial-gradient(24% 15% at 82% 72%,rgba(168,85,247,.28),transparent 70%),
+    radial-gradient(22% 14% at 50% 55%,rgba(244,63,94,.24),transparent 70%)}
+#noise{position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E")}
+#vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(112% 76% at 50% 48%,transparent 52%,rgba(3,5,8,.80) 100%)}
+#topscrim{position:absolute;left:0;top:0;width:1080px;height:420px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(6,8,11,.96) 0%,rgba(6,8,11,.90) 44%,rgba(6,8,11,0) 100%)}
+#endscrim{position:absolute;inset:0;pointer-events:none;opacity:0;background:rgba(6,8,11,.88)}
+
+#prog{position:absolute;left:64px;top:52px;width:952px;height:5px;border-radius:4px;
+  background:rgba(255,255,255,.10);overflow:hidden}
+#progfill{height:100%;width:0;border-radius:4px;background:#FB7185}
+#eyebrow{position:absolute;left:50%;top:86px;transform:translateX(-50%);
+  display:flex;align-items:center;gap:11px;padding:11px 22px 11px 18px;border-radius:100px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11)}
+#eyebrow b{font-size:21px;font-weight:700;letter-spacing:.20em;color:#C9D3E2}
+#eyedot{width:9px;height:9px;border-radius:50%;background:#FB7185}
+
+#cap{position:absolute;left:0;top:168px;width:1080px;padding:0 60px;text-align:center}
+#kicker{font-size:23px;font-weight:700;letter-spacing:.19em;color:#7F8B9D;margin-bottom:20px}
+.cline{font-size:62px;line-height:1.07;font-weight:800;letter-spacing:-.024em;color:#F4F7FB}
+.cline em{font-style:normal;color:#FB7185}
+
+#field{position:absolute;left:0;top:0;width:1080px;height:1350px}
+.sh{position:absolute;will-change:transform,opacity}
+.badge{position:absolute;border-radius:100px;font-size:15px;font-weight:800;letter-spacing:.06em;
+  color:#fff;display:flex;align-items:center;justify-content:center;opacity:0}
+.dot{width:22px;height:22px;background:#F43F5E;border:3px solid #0A0D13}
+.new{height:26px;padding:0 11px;background:#EC4899;border:2px solid #0A0D13}
+
+#gaze{position:absolute;left:0;top:0;pointer-events:none}
+
+/* the count of stops the eye makes before it lands: the whole argument in one number */
+#meter{position:absolute;left:0;top:1178px;width:1080px;text-align:center;opacity:0}
+#meterlab{font-size:21px;font-weight:700;letter-spacing:.17em;color:#7C8899}
+#meterrow{margin-top:12px;display:flex;align-items:baseline;justify-content:center;gap:16px}
+#meternum{font-size:62px;font-weight:900;letter-spacing:-.03em;color:#FB7185;line-height:1}
+#meterwas{font-size:26px;font-weight:700;color:#5E6878;opacity:0}
+
+.card2{position:absolute;left:0;width:1080px;padding:0 74px;text-align:center;opacity:0}
+#takeaway{top:398px}
+.tk{font-size:23px;font-weight:700;letter-spacing:.19em;color:#7F8B9D}
+.tl1{margin-top:52px;font-size:64px;line-height:1.1;font-weight:900;letter-spacing:-.032em;color:#F4F7FB}
+.tl2{margin-top:24px;font-size:56px;line-height:1.16;font-weight:800;letter-spacing:-.03em;color:#7FA8FF}
+.tdiv{margin:54px auto 0;width:120px;height:2px;background:rgba(255,255,255,.16)}
+.tcav{margin-top:42px;font-size:31px;line-height:1.5;font-weight:500;color:#96A1B2}
+.tcav b{font-weight:800;color:#C7D1DE}
+.tfoot{margin-top:60px;font-size:26px;font-weight:700;letter-spacing:.02em;color:#7E8A9B}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="hues"></div>
+  <div id="vig"></div>
+  <div id="noise"></div>
+
+  <div id="field"></div>
+
+  <svg id="gaze" width="1080" height="1350" viewBox="0 0 1080 1350" fill="none">
+    <path id="scan" stroke="#FB7185" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"
+          opacity="0" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <path id="direct" stroke="#7FA8FF" stroke-width="3" stroke-linecap="round"
+          opacity="0" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+    <circle id="gazedot" r="11" fill="#fff" opacity="0"/>
+  </svg>
+
+  <div id="meter">
+    <div id="meterlab">STOPS BEFORE THE EYE FINDS IT</div>
+    <div id="meterrow">
+      <div id="meternum">0</div>
+      <div id="meterwas">was 9</div>
+    </div>
+  </div>
+
+  <div id="topscrim"></div>
+  <div id="endscrim"></div>
+
+  <div id="prog"><div id="progfill"></div></div>
+  <div id="eyebrow"><div id="eyedot"></div><b>PRODUCT PSYCHOLOGY</b></div>
+
+  <div id="cap">
+    <div id="kicker"></div>
+    <div class="cline" id="cl1"></div>
+    <div class="cline" id="cl2"></div>
+  </div>
+
+  <div class="card2" id="takeaway">
+    <div class="tk">THE PRINCIPLE</div>
+    <div class="tl1">Attention is finite.</div>
+    <div class="tl2">When everything demands it,<br>nothing gets it.</div>
+    <div class="tdiv"></div>
+    <div class="tcav">Hierarchy isn&rsquo;t decoration. It&rsquo;s deciding what<br>you&rsquo;re willing to make <b>less</b> visible.</div>
+    <div class="tfoot">Follow for more product psychology</div>
+  </div>
+</div>
+
+<script>
+const cl=(v,a=0,b=1)=>v<a?a:(v>b?b:v);
+const sg=(t,a,b)=>cl((t-a)/(b-a));
+const lp=(a,b,p)=>a+(b-a)*p;
+const eOut=t=>1-Math.pow(1-t,3);
+const eIO =t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const eBack=t=>1+2.4*Math.pow(t-1,3)+1.5*Math.pow(t-1,2);
+const px=v=>v.toFixed(2)+'px';
+const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+const mix=(a,b,p)=>'rgb('+Math.round(lp(a[0],b[0],p))+','+Math.round(lp(a[1],b[1],p))+','+Math.round(lp(a[2],b[2],p))+')';
+
+const T=19.0;
+const SC=[
+ {id:'b1',t0:0.0, t1:3.2,  k:'TEN THINGS ON ONE SCREEN',    a:'Every element',  b:'is shouting.'},
+ {id:'b2',t0:3.2, t1:7.0,  k:'NOW FIND THE PRIMARY ACTION', a:'Your eye has to',b:'check <em>everything</em>.'},
+ {id:'b3',t0:7.0, t1:9.8,  k:'NINE STOPS. ONE SCREEN.',     a:'When everything',b:'competes, nothing wins.'},
+ {id:'b4',t0:9.8, t1:13.2, k:'NOTHING WAS ADDED',           a:'Nine things',    b:'just got <em>quieter</em>.'},
+ {id:'b5',t0:13.2,t1:15.8, k:'SAME PIXELS. ONE DECISION.',  a:'Now your eye',   b:'goes straight there.'},
+ {id:'b6',t0:15.8,t1:19.0},
+];
+const S=id=>SC.find(s=>s.id===id);
+const E={};
+['hues','progfill','eyebrow','eyedot','cap','kicker','cl1','cl2','field','scan',
+ 'direct','gazedot','meter','meternum','meterwas','topscrim','endscrim','takeaway']
+ .forEach(k=>E[k]=document.getElementById(k));
+
+/* ── the ten competing elements ─────────────────── */
+const DOM=9;                       // the one that survives as dominant
+const SHAPES=[
+ {x:250,y:520,w:128,h:128,k:'circle',  c:'#6366F1',b:null},
+ {x:540,y:520,w:132,h:132,k:'squircle',c:'#10B981',b:'dot'},
+ {x:830,y:520,w:136,h:126,k:'triangle',c:'#EC4899',b:'new'},
+ {x:165,y:730,w:126,h:126,k:'diamond', c:'#06B6D4',b:'dot'},
+ {x:415,y:730,w:120,h:120,k:'circle',  c:'#A855F7',b:null},
+ {x:665,y:730,w:132,h:120,k:'hexagon', c:'#EF4444',b:'new'},
+ {x:915,y:730,w:124,h:124,k:'squircle',c:'#84CC16',b:'dot'},
+ {x:250,y:940,w:158,h:104,k:'pill',    c:'#F43F5E',b:null},
+ {x:540,y:940,w:130,h:118,k:'hexagon', c:'#14B8A6',b:'dot'},
+ {x:830,y:940,w:142,h:112,k:'pill',    c:'#3B82F6',b:null},
+];
+const CLIP={
+  triangle:'polygon(50% 0%,100% 100%,0% 100%)',
+  diamond :'polygon(50% 0%,100% 50%,50% 100%,0% 50%)',
+  hexagon :'polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%)',
+};
+const MUTED=hx('#232937');
+const els=[], badges=[];
+SHAPES.forEach((s,i)=>{
+  const d=document.createElement('div');
+  d.className='sh';
+  d.style.left=px(s.x-s.w/2); d.style.top=px(s.y-s.h/2);
+  d.style.width=px(s.w); d.style.height=px(s.h);
+  if(s.k==='circle')        d.style.borderRadius='50%';
+  else if(s.k==='squircle') d.style.borderRadius='30%';
+  else if(s.k==='pill')     d.style.borderRadius='999px';
+  else                      d.style.clipPath=CLIP[s.k];
+  s.rgb=hx(s.c);
+  E.field.appendChild(d); els.push(d);
+
+  if(s.b){
+    const g=document.createElement('div');
+    g.className='badge '+s.b;
+    if(s.b==='new') g.textContent='NEW';
+    const bx=s.x+s.w/2-(s.b==='new'?26:14), by=s.y-s.h/2-(s.b==='new'?4:2);
+    g.style.left=px(bx); g.style.top=px(by);
+    E.field.appendChild(g); badges.push(g);
+  } else badges.push(null);
+});
+
+/* ── gaze paths ─────────────────────────────────── */
+const ENTRY={x:540,y:406};
+const ORDER=[1,4,7,2,5,0,8,3,6];                       // nine wrong stops, then the right one
+const scanPts=[ENTRY,...ORDER.map(i=>({x:SHAPES[i].x,y:SHAPES[i].y}))];
+E.scan.setAttribute('d','M'+scanPts.map(p=>p.x+' '+p.y).join(' L'));
+E.direct.setAttribute('d','M'+ENTRY.x+' '+ENTRY.y+' L'+SHAPES[DOM].x+' '+SHAPES[DOM].y);
+const scanLen=E.scan.getTotalLength(), directLen=E.direct.getTotalLength();
+/* cumulative fraction at each vertex, so the counter ticks exactly on arrival */
+const marks=[]; let acc=0;
+for(let i=1;i<scanPts.length;i++){
+  acc+=Math.hypot(scanPts[i].x-scanPts[i-1].x, scanPts[i].y-scanPts[i-1].y);
+  marks.push(acc/scanLen);
+}
+
+let lastCap=null;
+function setCap(s){ if(lastCap===s.id)return; lastCap=s.id;
+  E.kicker.innerHTML=s.k; E.cl1.innerHTML=s.a; E.cl2.innerHTML=s.b; }
+function env(t,s,inA,inB,outLen){
+  const i=eOut(sg(t,s.t0+inA,s.t0+inB)), o=sg(t,s.t1-outLen,s.t1);
+  return {o:i*(1-o), y:lp(26,0,i)-16*o};
+}
+
+const CALM_A=9.95, CALM_B=10.95;      // when the nine step back
+
+function render(t){
+  t=cl(t,0,T);
+  const s=SC.find(x=>t<x.t1)||SC[SC.length-1];
+  const calm=eIO(sg(t,CALM_A,CALM_B));
+  const gone=sg(t,15.85,16.55);        // everything clears for the takeaway
+
+  E.progfill.style.width=(t/T*100).toFixed(3)+'%';
+  E.progfill.style.background=mix(hx('#FB7185'),hx('#5B8CFF'),calm);
+  E.eyedot.style.background=mix(hx('#FB7185'),hx('#5B8CFF'),calm);
+
+  E.hues.style.opacity=(eOut(sg(t,.2,1.2))*(1-calm)*(1-gone)).toFixed(3);
+
+  const eb=eOut(sg(t,.25,.95));
+  E.eyebrow.style.opacity=eb.toFixed(3);
+  E.eyebrow.style.transform='translateX(-50%) translateY('+px(lp(-14,0,eb))+') scale('+lp(.94,1,eb).toFixed(4)+')';
+
+  if(s.id!=='b6'){
+    setCap(s);
+    const A=env(t,s,.04,.52,.24), B=env(t,s,.10,.60,.24), C=env(t,s,.16,.68,.24);
+    E.cap.style.opacity=1;
+    E.kicker.style.opacity=A.o.toFixed(3); E.kicker.style.transform='translateY('+px(A.y)+')';
+    E.cl1.style.opacity=B.o.toFixed(3);    E.cl1.style.transform='translateY('+px(B.y)+')';
+    E.cl2.style.opacity=C.o.toFixed(3);    E.cl2.style.transform='translateY('+px(C.y)+')';
+  } else E.cap.style.opacity=0;
+
+  /* ── shapes ─────────────────────────────────── */
+  for(let i=0;i<SHAPES.length;i++){
+    const S_=SHAPES[i], el=els[i], isDom=(i===DOM);
+    const pop=eBack(sg(t,.25+i*.075,1.05+i*.075));
+    /* while competing: every one pulses on its own clock */
+    const beat=1+.055*Math.sin(t*(2.1+i*.27)+i*1.7);
+    const spin=(S_.k==='circle'||S_.k==='pill')?0:Math.sin(t*.8+i)*2.6;
+    const restScale=isDom?1.06+.014*Math.sin(t*1.5):0.93;
+    const sc=lp(beat,restScale,calm)*lp(.4,1,pop);
+    el.style.transform='translateZ(0) scale('+sc.toFixed(4)+') rotate('+lp(spin,0,calm).toFixed(3)+'deg)';
+    el.style.background=isDom?S_.c:mix(S_.rgb,MUTED,calm);
+    el.style.opacity=(lp(1,isDom?1:.72,calm)*pop*(1-gone)).toFixed(3);
+    if(badges[i]) badges[i].style.opacity=(eOut(sg(t,1.1+i*.06,1.7+i*.06))*(1-calm)*(1-gone)).toFixed(3);
+  }
+
+  /* ── the searching gaze ─────────────────────── */
+  const b2=S('b2');
+  const scanP=cl((t-(b2.t0+.25))/3.35);
+  const scanFade=1-calm;
+  if(scanP>0&&scanFade>0){
+    E.scan.setAttribute('opacity',(.85*scanFade).toFixed(3));
+    E.scan.setAttribute('stroke-dashoffset',(1-scanP).toFixed(4));
+    const p=E.scan.getPointAtLength(scanLen*scanP);
+    /* once it has run out of places to look it stays restless, never settling */
+    const jx=scanP>=1?Math.sin(t*9.3)*7:0, jy=scanP>=1?Math.cos(t*11.7)*6:0;
+    E.gazedot.setAttribute('cx',(p.x+jx).toFixed(1)); E.gazedot.setAttribute('cy',(p.y+jy).toFixed(1));
+    E.gazedot.setAttribute('opacity',scanFade.toFixed(3));
+    E.gazedot.setAttribute('r','11');
+  } else { E.scan.setAttribute('opacity',0); }
+
+  /* ── the direct look, once there is only one thing to look at ── */
+  const dP=eIO(sg(t,CALM_B+.15,CALM_B+.75));
+  if(dP>0){
+    E.direct.setAttribute('opacity',((1-gone)*.9).toFixed(3));
+    E.direct.setAttribute('stroke-dashoffset',(1-dP).toFixed(4));
+    const p=E.direct.getPointAtLength(directLen*dP);
+    E.gazedot.setAttribute('cx',p.x.toFixed(1)); E.gazedot.setAttribute('cy',p.y.toFixed(1));
+    E.gazedot.setAttribute('opacity',(1-gone).toFixed(3));
+    E.gazedot.setAttribute('r',(11+3*Math.sin(t*4)).toFixed(2));
+  } else E.direct.setAttribute('opacity',0);
+
+  /* ── the counter ────────────────────────────── */
+  const mIn=eOut(sg(t,b2.t0+.15,b2.t0+.75));
+  E.meter.style.opacity=(mIn*(1-gone)).toFixed(3);
+  E.meter.style.transform='translateY('+px(lp(16,0,mIn))+')';
+  let stops=0;
+  for(let i=0;i<marks.length;i++) if(scanP>=marks[i]) stops=i+1;
+  if(calm>0){
+    E.meternum.textContent='1';
+    E.meternum.style.color=mix(hx('#FB7185'),hx('#7FA8FF'),calm);
+    /* a small pop as the number drops */
+    const q=sg(t,CALM_B,CALM_B+.35);
+    E.meternum.style.transform='scale('+lp(1.28,1,eOut(q)).toFixed(3)+')';
+  } else {
+    E.meternum.textContent=String(Math.min(stops,9));
+    E.meternum.style.color='#FB7185';
+    const last=marks[Math.max(0,Math.min(stops,9)-1)]||0;
+    const kick=1-cl((scanP-last)/.035);
+    E.meternum.style.transform='scale('+(1+.22*kick).toFixed(3)+')';
+  }
+  const wIn=eOut(sg(t,S('b5').t0+.15,S('b5').t0+.75));
+  E.meterwas.style.opacity=(wIn*(1-gone)).toFixed(3);
+
+  /* ── takeaway ───────────────────────────────── */
+  const b6=S('b6');
+  if(s.id==='b6'){
+    E.endscrim.style.opacity=eIO(sg(t,b6.t0,b6.t0+.7)).toFixed(3);
+    E.takeaway.style.opacity=1;
+    E.takeaway.style.transform='scale('+lp(1,1.022,eIO(sg(t,b6.t0,b6.t1))).toFixed(4)+')';
+    [[document.querySelector('.tk'),.10],[document.querySelector('.tl1'),.28],
+     [document.querySelector('.tl2'),.58],[document.querySelector('.tdiv'),.98],
+     [document.querySelector('.tcav'),1.12],[document.querySelector('.tfoot'),1.58]]
+    .forEach(([el,d])=>{
+      const p=eOut(sg(t,b6.t0+d,b6.t0+d+.55));
+      el.style.opacity=p.toFixed(3);
+      el.style.transform='translateY('+px(lp(24,0,p))+')';
+    });
+  } else { E.takeaway.style.opacity=0; E.endscrim.style.opacity=0; }
+}
+window.render=render;
+window.DURATION=T;
+render(0);
+</script>
+</body>
+</html>
