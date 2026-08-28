@@ -36,8 +36,8 @@ That complexity didn't disappear. It moved.
 
 Tangled system → carried by the team → one clean line for the user.
 
-Tesler's Law: every product has a complexity that can't be designed away —
-only moved. Good design decides who carries it.
+Tesler's Law: every product has a complexity that can't be designed away.
+It can only be moved. Good design decides who carries it.
 
 #ProductDesign #ProductThinking #UXDesign #ProductPsychology #BuildWithRoro
 
@@ -46,7 +46,7 @@ only moved. Good design decides who carries it.
 ## Posting notes
 
 - Upload the MP4 as a **native video**, not a link.
-- Silent by design — fully readable muted.
+- Silent by design - fully readable muted.
 - `out/thumbnail.jpg` is the tangle frame, which is the strongest still.
 - The strongest comment bait is the honest version of the argument: sometimes
   teams *should* push complexity to the user (power tools, pro workflows).
