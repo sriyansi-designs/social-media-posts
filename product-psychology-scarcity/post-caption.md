@@ -1,51 +1,68 @@
 # LinkedIn caption
 
-Ready to paste. The first two lines are what shows before "…see more", so they
-carry the hook on their own.
+Written to match the pattern in Sriyansi's existing Product Psychology posts:
+second-person observation → "isn't only X, it's Y" reframe → mechanism
+compressed with an arrow → one-line product implication. ~45 words, five
+Title Case hashtags ending on #BuildWithRoro. No lists, no question CTA.
+
+## Primary (on-pattern)
 
 ---
 
 "Only 2 left in stock."
 
-Three words. Same product, same price — and suddenly you decide faster.
+Same product. Same price. But the decision suddenly feels urgent.
 
-Here's the mechanic.
+That line isn't only showing stock. It's changing the question.
 
-Without that line, you're answering an open question: "Do I want this?" There's
-no deadline attached, so the tab stays open for three days.
+Do I want it? → Will I lose it?
 
-With it, you're quietly answering a different question: "Am I going to lose
-this?" Now waiting has a price. And decisions with a price attached get made
-sooner.
+Scarcity doesn't make a product better. It makes waiting expensive.
 
-That's the whole thing. Scarcity doesn't make the product better — it makes
-waiting expensive.
+#ProductPsychology #ProductDesign #UXDesign #ProductThinking #BuildWithRoro
 
-Two things I'd hold onto if you ship this:
+---
 
-1/ The number has to be real. A "Only 1 left" that's still there next Tuesday
-doesn't just stop working — it teaches people that nothing else on your page is
-true either. You spent trust to buy one order.
+## Alternate, if you want the honesty angle in the caption
 
-2/ Urgency compresses thinking, and compressed thinking shows up later as
-returns, cancellations and refund tickets. If you add a scarcity cue, watch
-post-purchase metrics, not just conversion.
+The video's closing frame already makes the fake-scarcity point. If you'd
+rather carry it in the text too:
 
-And the uncomfortable part: the same lever that helps someone stop dithering
-over a hotel room is the lever that helps them buy something they didn't need.
-Which of those you're building is a choice, not a side effect.
+---
 
-What's the most honest use of scarcity you've seen in a product?
+"Only 2 left in stock."
 
-#productmanagement #productdesign #behaviouraldesign #ux #productpsychology
+Same product. Same price. But waiting suddenly has a cost.
+
+That line isn't only showing stock. It's changing the question.
+
+Do I want it? → Will I lose it?
+
+Which is why it only works while it's true. A counter that never moves stops
+being urgency and starts being noise.
+
+#ProductPsychology #ProductDesign #UXDesign #ProductThinking #BuildWithRoro
 
 ---
 
 ## Posting notes
 
-- Upload the MP4 as a **native video** (not a link) — LinkedIn suppresses reach
-  on external links.
-- Silent by design: the video is fully readable muted, which is how most of the
-  feed watches it.
-- The video's last frame is a follow prompt; consider pinning your own reply
-  with the caveat point to seed comments.
+- Upload the MP4 as a **native video**, not a link.
+- Silent by design — fully readable muted, which is how the feed watches it.
+- `out/thumbnail.jpg` is the hook frame if you want to set a custom thumbnail.
+
+## Reference sample used
+
+The one post I could read without authentication (2026-08, "11h edited"):
+
+> You add one more item just to unlock free delivery. That small progress bar
+> isn't only showing progress. It's influencing a decision. Spend a little
+> more → avoid paying a smaller fee. A tiny product decision that can
+> influence basket size.
+>
+> #ProductPsychology #ProductDesign #UXDesign #ProductThinking #BuildWithRoro
+
+The profile's recent-activity feed is login-walled (HTTP 999), so the visual
+branding of past posts — colours, type, watermark, whether videos carry a
+name/handle footer — is still unknown and the video uses my own design
+choices for those.
