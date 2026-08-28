@@ -17,14 +17,12 @@ body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing
 
 #stage{position:relative;width:1080px;height:1350px;overflow:hidden;
   background:
-    radial-gradient(46% 26% at 50% 44%,rgba(255,120,70,.16),transparent 70%),
-    radial-gradient(40% 24% at 50% 84%,rgba(80,130,255,.20),transparent 70%),
+    radial-gradient(46% 26% at 50% 44%,rgba(138,110,232,.13),transparent 70%),
     radial-gradient(125% 85% at 50% -5%,#151C2B 0%,#0B0F17 52%,#06080B 100%)}
 
-/* the warm "mess" light and the cool "surface" light, cross-faded over time */
-#warm,#cool{position:absolute;inset:0;pointer-events:none}
-#warm{background:radial-gradient(38% 22% at 50% 45%,rgba(255,110,60,.30),transparent 70%);opacity:0}
-#cool{background:radial-gradient(34% 18% at 50% 86%,rgba(70,130,255,.38),transparent 70%);opacity:0}
+/* ambient light for the tangle only - no bloom on the user side of the line */
+#warm{position:absolute;inset:0;pointer-events:none}
+#warm{background:radial-gradient(38% 22% at 50% 45%,rgba(148,112,242,.26),transparent 70%);opacity:0}
 #noise{position:absolute;inset:0;opacity:.05;pointer-events:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E")}
 #vig{position:absolute;inset:0;pointer-events:none;
@@ -35,17 +33,17 @@ body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing
 
 #prog{position:absolute;left:64px;top:52px;width:952px;height:5px;border-radius:4px;
   background:rgba(255,255,255,.10);overflow:hidden}
-#progfill{height:100%;width:0;border-radius:4px;background:#FF8A5C}
+#progfill{height:100%;width:0;border-radius:4px;background:#A78BFA}
 #eyebrow{position:absolute;left:50%;top:86px;transform:translateX(-50%);
   display:flex;align-items:center;gap:11px;padding:11px 22px 11px 18px;border-radius:100px;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.11)}
 #eyebrow b{font-size:21px;font-weight:700;letter-spacing:.20em;color:#C9D3E2}
-#eyedot{width:9px;height:9px;border-radius:50%;background:#FF7A4C;box-shadow:0 0 0 5px rgba(255,122,76,.18)}
+#eyedot{width:9px;height:9px;border-radius:50%;background:#9C82F0;box-shadow:0 0 0 5px rgba(156,130,240,.18)}
 
 #cap{position:absolute;left:0;top:172px;width:1080px;padding:0 60px;text-align:center}
 #kicker{font-size:23px;font-weight:700;letter-spacing:.19em;color:#7F8B9D;margin-bottom:20px}
 .cline{font-size:62px;line-height:1.07;font-weight:800;letter-spacing:-.024em;color:#F4F7FB}
-.cline em{font-style:normal;color:#FF9E7A}
+.cline em{font-style:normal;color:#B49CFF}
 
 #dia{position:absolute;left:0;top:0;pointer-events:none}
 
@@ -59,18 +57,17 @@ body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing
 .side .lab{font-size:21px;font-weight:700;letter-spacing:.17em;color:#7C8899}
 .side .cnt{margin-top:9px;font-size:30px;font-weight:800;letter-spacing:-.02em;opacity:0}
 #sideTeam{right:82px;top:806px;text-align:right}
-#sideTeam .cnt{color:#FF9E7A}
+#sideTeam .cnt{color:#B49CFF}
 #sideUser{left:82px;top:952px;text-align:left}
 #sideUser .cnt{color:#83A9FF}
 
 /* the one thing the user actually touches */
 #card{position:absolute;left:334px;top:1074px;width:412px;padding:22px;border-radius:22px;
   background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.13);opacity:0;
-  box-shadow:0 30px 70px -28px rgba(40,90,220,.55)}
+  box-shadow:0 24px 56px -34px rgba(0,0,0,.9)}
 #card .ct{font-size:21px;font-weight:600;color:#96A2B4}
 #card .cb{margin-top:18px;height:64px;border-radius:15px;background:#2B5CFF;color:#fff;
-  font-size:21px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;
-  box-shadow:0 14px 30px -12px rgba(43,92,255,.85)}
+  font-size:21px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;justify-content:center}
 
 .card2{position:absolute;left:0;width:1080px;padding:0 74px;text-align:center;opacity:0}
 #takeaway{top:396px}
@@ -86,7 +83,6 @@ body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing
 <body>
 <div id="stage">
   <div id="warm"></div>
-  <div id="cool"></div>
   <div id="vig"></div>
   <div id="noise"></div>
 
@@ -94,8 +90,6 @@ body{font-family:Inter,'Liberation Sans',Arial,sans-serif;-webkit-font-smoothing
     <g id="strands"></g>
     <line id="divider" x1="90" y1="920" x2="990" y2="920" stroke="rgba(255,255,255,.20)"
           stroke-width="1.5" stroke-dasharray="7 9" opacity="0"/>
-    <path id="cleanGlow" stroke="#3E6BFF" stroke-width="13" stroke-linecap="round" opacity="0"
-          pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
     <path id="clean" stroke="#8FB4FF" stroke-width="3.2" stroke-linecap="round" opacity="0"
           pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
     <circle id="node" cx="540" cy="920" r="7" fill="#9CC0FF" opacity="0"/>
@@ -167,8 +161,8 @@ const SC=[
 ];
 const S=id=>SC.find(s=>s.id===id);
 const E={};
-['warm','cool','progfill','eyebrow','eyedot','cap','kicker','cl1','cl2','strands','divider',
- 'clean','cleanGlow','node','nodeRing','sideTeam','sideUser','card','topscrim','endscrim',
+['warm','progfill','eyebrow','eyedot','cap','kicker','cl1','cl2','strands','divider',
+ 'clean','node','nodeRing','sideTeam','sideUser','card','topscrim','endscrim',
  'takeaway','dia'].forEach(k=>E[k]=document.getElementById(k));
 const TAGS=[0,1,2,3,4].map(i=>document.getElementById('tag'+i));
 
@@ -208,7 +202,7 @@ function pathFrom(pts){
   return d;
 }
 const mix=(a,b,p)=>'rgb('+Math.round(lp(a[0],b[0],p))+','+Math.round(lp(a[1],b[1],p))+','+Math.round(lp(a[2],b[2],p))+')';
-const C_HOT=[196,116,84], C_COOL=[86,102,134], C_LIT=[214,132,92];
+const C_HOT=[124,106,176], C_COOL=[86,102,134], C_LIT=[170,146,246];
 
 let lastCap=null;
 function setCap(s){ if(lastCap===s.id)return; lastCap=s.id;
@@ -224,12 +218,11 @@ function render(t){
 
   E.progfill.style.width=(t/T*100).toFixed(3)+'%';
   const cool=sg(t,9.8,13.0);
-  E.progfill.style.background='rgb('+Math.round(lp(255,110,cool))+','+Math.round(lp(138,150,cool))+','+Math.round(lp(92,255,cool))+')';
+  E.progfill.style.background='rgb('+Math.round(lp(167,110,cool))+','+Math.round(lp(139,150,cool))+','+Math.round(lp(250,255,cool))+')';
 
   /* ambient: warm while it is a mess, cool once it resolves at the surface */
   const messy=1-sg(t,6.6,9.4);
   E.warm.style.opacity=(lp(.25,1,messy)*(1-sg(t,16.2,17.0)*.55)).toFixed(3);
-  E.cool.style.opacity=(cool*(1-sg(t,16.2,17.0)*.4)).toFixed(3);
 
   const eb=eOut(sg(t,.25,.95));
   E.eyebrow.style.opacity=eb.toFixed(3);
@@ -284,12 +277,9 @@ function render(t){
 
   const ln=eIO(sg(t,b4.t0+.55,b4.t0+1.55));
   E.clean.setAttribute('d','M540 920 L540 1074');
-  E.cleanGlow.setAttribute('d','M540 920 L540 1074');
   const lnFade=1-sg(t,16.25,17.0)*.8;
   E.clean.setAttribute('opacity',(ln>0?lnFade:0).toFixed(3));
-  E.cleanGlow.setAttribute('opacity',(ln>0?(.16+.08*Math.sin(t*3))*lnFade:0).toFixed(3));
   E.clean.setAttribute('stroke-dashoffset',(1-ln).toFixed(4));
-  E.cleanGlow.setAttribute('stroke-dashoffset',(1-ln).toFixed(4));
 
   const nd=eOut(sg(t,b4.t0+.35,b4.t0+.85));
   E.node.setAttribute('opacity',(nd*lnFade).toFixed(3));
